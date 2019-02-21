@@ -1,0 +1,37 @@
+
+
+  subroutine logspace_dp(xmin,xmax,x)
+    implicit none
+  integer,parameter :: dp = selected_real_kind(p=15,r=307)
+
+    real(dp),intent(in):: xmin,xmax
+    real(dp),intent(out) :: x(:)
+    if (size(x) == 1 .and. xmin /= xmax) then
+       write(0,'("ERROR: Cannot call logspace with n=1 and xmin /= xmax")')
+       stop
+    end if
+    call linspace(log10(xmin),log10(xmax),x)
+    x = 10._dp**x
+  end subroutine logspace_dp
+
+  subroutine linspace_dp(xmin,xmax,x)
+    implicit none
+  integer,parameter :: dp = selected_real_kind(p=15,r=307)
+
+    real(dp),intent(in) :: xmin,xmax
+    real(dp),intent(out) :: x(:)
+    integer :: i,n
+    n = size(x)
+    if (n == 1) then
+       if(xmin /= xmax) then
+          write(0,'("ERROR: Cannot call linspace with n=1 and xmin /= xmax")')
+          stop
+       else
+          x = xmin
+       end if
+    else
+       do i=1,n
+          x(i) = (xmax-xmin) * real(i-1,dp) / real(n-1,dp) + xmin
+       end do
+    end if
+  end subroutine linspace_dp
