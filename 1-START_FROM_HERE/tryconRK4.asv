@@ -59,7 +59,7 @@ for j=1:Nstep
         title(sprintf('time=%-4.3e',t(j)))
         %         ,pause(0.5)
         view([-18,81])
-        xlim([0 2*pi])
+        xlim([0 2*p])
         saveas(gcf,[num2str(j),'.jpg'])
         set(gcf,'visible','off')
         %         ,drawnow,shg

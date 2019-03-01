@@ -14,7 +14,7 @@ y=eta;
 D2 = D*D;
 [xx,yy]= meshgrid (x,y);
 p=1e4;
-tfinal = 1;
+tfinal = 10;
 dt   = 1e-4;
 Nstep = ceil(tfinal/dt);
 t    = (0:Nstep)*dt;
@@ -65,14 +65,14 @@ error=u-uex;
 max(abs(uex(:)-u(:)))
 
 %% Plot
-%     if mod(j,p)==0;U{j/p}=u;
-%            ue =  ufun(xx,yy,t(j+1));
-% 
-%         subplot(131),mesh(xx,yy,u);%set(s1,'FaceColor','none','EdgeColor','k');hold on;
-%         subplot(132),mesh(xx,yy,ue);%set(s2,'FaceColor','interp','EdgeColor','interp')
-%         subplot(133),mesh(xx,yy,u-ue);
-%         title(sprintf('time=%-4.3e Nx %d Ny %d dt=%d.',t(j+1),Nx,Ny,dt));
-%         grid on,drawnow,shg
-%         title(sprintf('time=%-4.3e Nx %d Ny %d dt=%d.',t(j+1),Nx,Ny,dt));
-%         grid on,drawnow;shg;
-%     end
+    if mod(j,p)==0;U{j/p}=u;
+           ue =  ufun(xx,yy,t(j+1));
+
+        subplot(131),mesh(xx,yy,u);%set(s1,'FaceColor','none','EdgeColor','k');hold on;
+        subplot(132),mesh(xx,yy,ue);%set(s2,'FaceColor','interp','EdgeColor','interp')
+        subplot(133),mesh(xx,yy,u-ue);
+        title(sprintf('time=%-4.3e Nx %d Ny %d dt=%d.',t(j+1),Nx,Ny,dt));
+        grid on,drawnow,shg
+        title(sprintf('time=%-4.3e Nx %d Ny %d dt=%d.',t(j+1),Nx,Ny,dt));
+        grid on,drawnow;shg;
+    end

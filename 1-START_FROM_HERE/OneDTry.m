@@ -1,38 +1,43 @@
-clc;clear;close;
-%% u_t -  u_yy + k^2*u + b
-% y Chebyshev, x Fourier
+% This code solves time dependent one-dimensional form (1D)
+% using various time marching schemes. 
+% u_t -  u_yy + k^2*u + b
+% Spatial discretization is carried out with :
+% y Chebyshev Polynomial approximation, x Fourier approximation. 
 
 %% ---------------------EULER------------------------------------------ %%
 clc;clear all;close all;
-Ny=16;
-kx = 3;
-[D,y] = cheb(Ny);           %cos(pi*(0:Ny)/Ny);
-yi = linspace(-1,1,100);
-D2 = D*D;
-ufun = @(y,t) exp(y+t);
-% ufun_y = @(y,t) exp(y+t);
-% ufun_t = @(y,t) exp(y+t);
-% ufun_yy = @(y,t) exp(y+t);
-u = ufun(y,0);
-p=1e4;         %store
-step=1e4;
-dt= 1e-7;
-t=(0:step)*dt;
-I=eye(Ny+1);
-
-A = dt*D2-kx^2*dt*I+I;
-for j=1:step
-    u=A*u;
+Ny=32;% number of grid points
+kx = 30;
+[D,y] = cheb(Ny); % get Chebyshev differentiation matrix and grid points %cos(pi*(0:Ny)/Ny);
+yi = linspace(-1,1,100);% discretize the domain for exact function evaluation
+D2 = D*D; % second derivative. 
+ufun = @(y,t) exp(y+t); % sample function to be approximated (this means the exact value will be known)
+% ufun_y = @(y,t) exp(y+t);% ufun_t = @(y,t) exp(y+t);% ufun_yy = @(y,t) exp(y+t);
+u = ufun(y,0); % initial value
+p=1e10;    % every p step store & visualize
+step=1e3;  % total number of steps to march
+dt= 1e-7;  % time step
+t=(0:step)*dt; % time axis. 
+I=eye(Ny+1); % identity matrix 
+A = dt*D2-kx^2*dt*I+I; % solver matrix
+for j=1:step    
+    u=A*u; % solve the system to time march assigne new .
+    % set boundary conditions at first and last grid points 
+    % Last grid point is N+1 due to Chebyshev grid point distribution
+    % (Gauss-Lobatto)    
     u(1)=ufun(y(1),t(j+1));    u(Ny+1)=ufun(y(Ny+1),t(j+1));
-    if mod(j,p)==0;
+    % store & visualize
+    if mod(j,p)==0
         ue = ufun(y,t(j+1));
         uei = ufun(yi,t(j+1));
-        subplot(121), plot(u,y,'b.-',uei,yi,'r-')
-        subplot(122), plot(u(:)-ue(:),y,'g.-')
-        title(sprintf('BD2   time=%-4.3e Nx %d Ny %d dt=%d.',t(j+1),Ny,Ny,dt)),grid on,drawnow,shg,pause(0.1)
-        
+        subplot(121), plot(u,y,'b.-',uei,yi,'r-'),legleg=legend('U(t)','U(t)_{exact}','Location','best');set(legleg,'Fontsize',16);
+        ylabel('Grid points (domain)'),xlabel('Function value')        
+        subplot(122), plot(u(:)-ue(:),y,'g.-'),legleg=legend('U(t)-U(t)_{exact}','Location','best');set(legleg,'Fontsize',16);
+        xlabel('Error (u-u_{exact})')        
+        title(sprintf('Euler time=%-4.3e Nx %d Ny %d dt=%d.',t(j+1),Ny,Ny,dt));grid on;drawnow,shg,pause(0.1)        
     end
 end
+ue = ufun(y,t(j+1)); % in case ue does not exist
 error=max(abs(ue(:)-u(:)))
 %% -------------------------RK2-------------------------------------- %%
 clc;clear all;close all;
