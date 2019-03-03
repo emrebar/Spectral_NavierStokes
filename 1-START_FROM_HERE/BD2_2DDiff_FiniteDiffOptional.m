@@ -5,19 +5,18 @@ x = (0:Nx-1)/Nx*2*pi;         % x coordinate
 kx = fftshift(-Nx/2:Nx/2-1);   % wave vector
 y    = -cos(pi*(0:Ny)/Ny)';
 
-% Dxi = zeros(Ny+1);
-% for ii=1:Ny+1
-%    Dxi(ii,:) = fdcoeffF(2,y(ii),y);
-% end
-% D2=Dxi;
-[D]=cheb(Ny);D2=D^2:
+Dxi = zeros(Ny+1);
+for ii=1:Ny+1
+    Dxi(ii,:) = fdcoeffF(2,y(ii),y);
+end
+D2=Dxi;
+% [D]=cheb(Ny);D2=D^2:
 [xx,yy]= meshgrid (x,y);
 p=1e4;
-tfinal = 0.01;
+tfinal = 1;
 dt   = 1e-5;
 Nstep = ceil(tfinal/dt);
 t    = (0:Nstep)*dt;
-time = t;
 Lx = 17;
 I=eye(Ny+1);
 
@@ -46,10 +45,10 @@ for j=1:Nstep
     end
     unew=real(ifft(unewhat,[],2));
     unew([1 Ny+1],:) = ufun(xx([1 Ny+1],:),yy([1 Ny+1],:),t(j+1));
-
+    %     unew([1 Ny+1],:) = BC*unew(2:Ny,:);   % Neumann BCs for |y| = 1
     uold=real(ifft(uhat,[],2));
     u=unew;
-
+    
     
 end
 %%
@@ -58,14 +57,14 @@ error=u-uex;
 max(abs(uex(:)-u(:)))
 
 %% Plot
-%     if mod(j,p)==0;U{j/p}=u;
-%            ue =  ufun(xx,yy,t(j+1));
-% 
-%         subplot(131),mesh(xx,yy,u);%set(s1,'FaceColor','none','EdgeColor','k');hold on;
-%         subplot(132),mesh(xx,yy,ue);%set(s2,'FaceColor','interp','EdgeColor','interp')
-%         subplot(133),mesh(xx,yy,u-ue);
-%         title(sprintf('time=%-4.3e Nx %d Ny %d dt=%d.',t(j+1),Nx,Ny,dt));
-%         grid on,drawnow,shg
-%         title(sprintf('time=%-4.3e Nx %d Ny %d dt=%d.',t(j+1),Nx,Ny,dt));
-%         grid on,drawnow;shg;
-%     end
+if mod(j,p)==0;U{j/p}=u;
+    ue =  ufun(xx,yy,t(j+1));
+    
+    subplot(131),mesh(xx,yy,u);%set(s1,'FaceColor','none','EdgeColor','k');hold on;
+    subplot(132),mesh(xx,yy,ue);%set(s2,'FaceColor','interp','EdgeColor','interp')
+    subplot(133),mesh(xx,yy,u-ue);
+    title(sprintf('time=%-4.3e Nx %d Ny %d dt=%d.',t(j+1),Nx,Ny,dt));
+    grid on,drawnow,shg
+    title(sprintf('time=%-4.3e Nx %d Ny %d dt=%d.',t(j+1),Nx,Ny,dt));
+    grid on,drawnow;shg;
+end
